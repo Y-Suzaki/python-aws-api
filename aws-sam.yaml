@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM Swagger.
+
+Parameters:
+  Env:
+    Type: String
+    Default: dev
+  ArtifactBucket:
+    Type: String
+    Default: cslab-aws-sam-deploy-dev
+Resources:
+  SampleApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: !Sub s3://${ArtifactBucket}/swagger-lambda.yaml
+  SkillsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.6
+      Handler: lambda.get
+      CodeUri: src/skills
+      Role: !GetAtt LambdaRole.Arn
+      Events:
+        ApiProxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SampleApi
+            Path: /skills
+            Method: GET
+  SkillFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.6
+      Handler: lambda.get
+      CodeUri: src/skill
+      Role: !GetAtt LambdaRole.Arn
+      Events:
+        ApiProxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SampleApi
+            Path: /skills/{skillId}
+            Method: GET
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        -
+          PolicyName: "lambda_cw_policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action: "cloudwatch:*"
+                Resource: "*"
