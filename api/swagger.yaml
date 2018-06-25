@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
-  description: "It is an API for managing engineer information.."
+  description: "It is an API for managing kaonashi information.."
   version: "1.0.0"
-  title: "Engineer API"
+  title: "Kaonashi API"
   termsOfService: "http://swagger.io/terms/"
   contact:
     email: "apiteam@swagger.io"
@@ -10,22 +10,22 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "localhost"
-basePath: "/v2"
+basePath: "/v1"
 tags:
-- name: "Skill"
-  description: "Abtou skill infomation."
-- name: "Engineer"
-  description: "About engineer infomation."
+- name: "employee"
+  description: "Abtou employee infomation."
+- name: "skill"
+  description: "About skill infomation."
 schemes:
 - "http"
 paths:
-  /skills:
+  /employees:
     get:
       tags:
-      - "Skill"
-      summary: "Find skill list."
-      description: "Find skill list."
-      operationId: "findSkills"
+      - "employee"
+      summary: "Find employee list."
+      description: "Find employee list."
+      operationId: "findEmployees"
       produces:
       - "application/json"
       parameters:
@@ -44,76 +44,12 @@ paths:
           default:
             statusCode: 200
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SkillsFunction.Arn}/invocations
-        passthroughBehavior: "when_no_match"
-        httpMethod: POST
-        type: aws_proxy
-    post:
-      tags:
-      - "Skill"
-      summary: "Create skill infomation."
-      description: "Create skill infomation."
-      operationId: "createSkill"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Skill request body."
-        required: true
-        schema:
-          $ref: '#/definitions/Skill'
-      responses:
-        "200":
-          description: "successful operation"
-      x-amazon-apigateway-integration:
-        type: mock
-        requestTemplates:
-          application/json: |
-            {
-              "statusCode" : 200
-            }
-        responses:
-          default:
-            statusCode: 200
-            responseTemplates:
-              application/json: |
-                {
-                  "id":"00001", "name:"tanaka"
-                }
-  /skills/{skillId}:
-    get:
-      tags:
-      - "Skill"
-      summary: "Find skill by skill id."
-      description: "Find skill by skill id."
-      operationId: "findSkillById"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "skillId"
-        in: "path"
-        description: "Skill id."
-        required: true
-        type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            $ref: '#/definitions/Skill'
-        "404":
-          description: "Skill not found"
-      x-amazon-apigateway-integration:
-        responses:
-          default:
-            statusCode: 200
-        uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SkillFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EmployeesFunction.Arn}/invocations
         passthroughBehavior: "when_no_match"
         httpMethod: POST
         type: aws_proxy
 definitions:
-  Skill:
+  employee:
     type: "object"
     required:
     - "name"
@@ -122,10 +58,10 @@ definitions:
         type: "string"
       name:
         type: "string"
-  Skills:
+  employees:
     type: "array"
     items:
-      $ref: Skill
+      $ref: '#/definitions/employee'
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"

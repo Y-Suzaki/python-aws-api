@@ -8,9 +8,9 @@ Parameters:
     Default: dev
   ArtifactBucket:
     Type: String
-    Default: cslab-aws-sam-deploy-dev
+    Default: kaonashi-aws-sam-deploy-dev
 Resources:
-  SampleApi:
+  KaonashiApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: dev
@@ -18,34 +18,20 @@ Resources:
         Fn::Transform:
           Name: AWS::Include
           Parameters:
-            Location: !Sub s3://${ArtifactBucket}/swagger-lambda.yaml
-  SkillsFunction:
+            Location: !Sub s3://${ArtifactBucket}/swagger.yaml
+  EmployeesFunction:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: python3.6
-      Handler: lambda.get
-      CodeUri: src/skills
+      Handler: employees.get
+      CodeUri: src/domain/employees
       Role: !GetAtt LambdaRole.Arn
       Events:
         ApiProxy:
           Type: Api
           Properties:
-            RestApiId: !Ref SampleApi
-            Path: /skills
-            Method: GET
-  SkillFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Runtime: python3.6
-      Handler: lambda.get
-      CodeUri: src/skill
-      Role: !GetAtt LambdaRole.Arn
-      Events:
-        ApiProxy:
-          Type: Api
-          Properties:
-            RestApiId: !Ref SampleApi
-            Path: /skills/{skillId}
+            RestApiId: !Ref KaonashiApi
+            Path: /employees
             Method: GET
   LambdaRole:
     Type: AWS::IAM::Role
