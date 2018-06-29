@@ -23,8 +23,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: python3.6
-      Handler: employees.get
-      CodeUri: src/domain/employees
+      Handler: domain/employees/employees.get
+      CodeUri: 
+        Bucket: !Sub ${ArtifactBucket}
+        Key: kaonashi-function.zip
       Role: !GetAtt LambdaRole.Arn
       Events:
         ApiProxy:
@@ -45,11 +47,11 @@ Resources:
             Action: "sts:AssumeRole"
       Policies:
         -
-          PolicyName: "lambda_cw_policy"
+          PolicyName: "lambda_logs_policy"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
               -
                 Effect: "Allow"
-                Action: "cloudwatch:*"
+                Action: "logs:*"
                 Resource: "*"
