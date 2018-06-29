@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  Env:
+    Type: String
+    Default: dev
+
+Resources:
+  StepServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Join [ "-", [ "kaonashi", "ssh", "key", Ref: "Env" ] ]
+      # Amazon Linux 2 AMI (HVM), SSD Volume Type
+      ImageId: ami-a9d09ed1
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeviceIndex: 0
+        GroupSet: 
+        - { "Fn::ImportValue": !Join [ "-", [ "kaonashi", "step", "server", "sg", "Ref":"Env"  ] ] }
+        SubnetId: { "Fn::ImportValue": !Join [ "-", [ "kaonashi", "public", "subnet", "a", "Ref":"Env"  ] ] }
+      UserData: !Base64 |
+        #!/bin/bash
+        yum update -y
+        yum install mysql -y
+      Tags:
+      - Key: Name
+        Value: !Join [ "-", [ "kaonashi", "step", "server", "Ref":"Env"  ] ]
+
