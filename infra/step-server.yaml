@@ -11,7 +11,7 @@ Resources:
       InstanceType: t2.micro
       KeyName: !Join [ "-", [ "kaonashi", "ssh", "key", Ref: "Env" ] ]
       # Amazon Linux 2 AMI (HVM), SSD Volume Type
-      ImageId: ami-a9d09ed1
+      ImageId: ami-0ad99772
       NetworkInterfaces:
       - AssociatePublicIpAddress: true
         DeviceIndex: 0
@@ -21,8 +21,11 @@ Resources:
       UserData: !Base64 |
         #!/bin/bash
         yum update -y
-        yum install mysql -y
+        yum install python36 -y
+        yum install mysql mysql-devel -y
+        yum install gcc -y
+        yum install git -y
+        ln -s /usr/bin/pip-3.6 /usr/bin/pip3
       Tags:
       - Key: Name
         Value: !Join [ "-", [ "kaonashi", "step", "server", "Ref":"Env"  ] ]
-
