@@ -2,10 +2,22 @@
 
 s3_bucket="kaonashi-aws-sam-deploy-test-dev"
 
-echo "Upload swagger spec to s3 bucket..."
-aws s3 cp api/swagger.yaml s3://${s3_bucket}/ \
-  --region us-west-2 \
-  --profile default 
+echo "** Start to deploy and build. **"
+#mkdir -p deploy
+#pip3 install -r src/requirements.txt -t deploy
+#cp -r src/* deploy
+#cd deploy
+#zip -r ../kaonashi-function.zip *
+#cd ..
+
+echo "Upload applicaiton zip and swagger spec to s3 bucket..."
+#aws s3 cp kaonashi-function.zip s3://${s3_bucket}/ \
+#  --region us-west-2 \
+#  --profile default 
+
+#aws s3 cp api/swagger.yaml s3://${s3_bucket}/ \
+#  --region us-west-2 \
+#  --profile default 
 
 echo "Build kaonashi api..."
 aws cloudformation package \
@@ -23,3 +35,6 @@ aws cloudformation deploy \
   --parameter-overrides ArtifactBucket=${s3_bucket} \
   --region us-west-2 \
   --profile default 
+
+echo "** All complete! **"
+rm -rf deploy

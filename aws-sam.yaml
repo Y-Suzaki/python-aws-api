@@ -23,9 +23,16 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: python3.6
-      Handler: employees.get
-      CodeUri: src/domain/employees
+      Handler: domain/employees/employees.get
+      CodeUri: 
+        Bucket: !Sub ${ArtifactBucket}
+        Key: kaonashi-function.zip
       Role: !GetAtt LambdaRole.Arn
+      VpcConfig:
+        SecurityGroupIds:
+        - { "Fn::ImportValue": !Join [ "-", [ "kaonashi", "application", "sg", "Ref":"Env"  ] ] }
+        SubnetIds:
+        - { "Fn::ImportValue": !Join [ "-", [ "kaonashi", "application", "subnet", "a", "Ref":"Env"  ] ] }
       Events:
         ApiProxy:
           Type: Api
@@ -45,11 +52,18 @@ Resources:
             Action: "sts:AssumeRole"
       Policies:
         -
-          PolicyName: "lambda_cw_policy"
+          PolicyName: "lambda_logs_policy"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              -
-                Effect: "Allow"
-                Action: "cloudwatch:*"
+              - Effect: "Allow"
+                Action: "logs:*"
                 Resource: "*"
+              - Effect: "Allow"
+                Action:
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DetachNetworkInterface
+                  - ec2:DeleteNetworkInterface
+                Resource: "*"
+                

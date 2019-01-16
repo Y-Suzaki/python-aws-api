@@ -7,13 +7,24 @@ from domain.domain_response import DomainResponse
 from datasource.model.employee import Employee
 
 
-class EmployeesResponse(DomainResponse):
+class EmployeeDomainResponse(DomainResponse):
     def to_json_from_model(self, source):
-        return [{'id': x.id, 'name': x.name, 'age': x.age} for x in source]
+        model = source
+        return {'id': model.id, 'name': model.name, 'age': model.age}
 
 
 def get(event, context):
-    try:
-        return EmployeesResponse(Employee.get_employee_all()).build_success()
-    except:
-        return EmployeesResponse().build_server_error()
+    pass
+
+
+def create(event, context):
+    pass
+
+
+def update(event, context):
+    pass
+
+
+def delete(event, context):
+    pass
+
