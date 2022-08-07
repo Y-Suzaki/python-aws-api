@@ -1,0 +1,128 @@
+openapi: 3.0.1
+info:
+  title: Engineer API
+  description: It is an API for managing engineer information..
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: http://localhost
+tags:
+- name: Skill
+  description: Abtou skill infomation.
+- name: Engineer
+  description: About engineer infomation.
+paths:
+  /skills:
+    get:
+      tags:
+      - Skill
+      summary: Find skill list.
+      description: Find skill list.
+      operationId: findSkills
+      parameters:
+      - name: limit
+        in: query
+        description: Acceptable item limit.
+        schema:
+          type: integer
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skills'
+        503:
+          description: Internal server error.
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SkillFunction.Arn}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+    post:
+      tags:
+      - Skill
+      summary: Create skill infomation.
+      description: Create skill infomation.
+      operationId: createSkill
+      requestBody:
+        description: Skill request body.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Skill'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SkillFunction.Arn}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+  /skills/{skill_id}:
+    get:
+      tags:
+      - Skill
+      summary: Find skill by skill id.
+      description: Find skill by skill id.
+      operationId: findSkillById
+      parameters:
+      - name: skill_id
+        in: path
+        description: Skill id.
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+        404:
+          description: Skill not found
+          content: {}
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: 200
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SkillFunction.Arn}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+components:
+  schemas:
+    Skill:
+      required:
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Skills:
+      type: array
+      items:
+        $ref: '#/components/schemas/Skill'
